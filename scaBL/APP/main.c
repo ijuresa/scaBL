@@ -35,7 +35,9 @@
 #include "typedefs.h"
 
 // DRV
+#include "drv_error.h"
 #include "drv_rcc.h"
+#include "drv_gpio.h"
 
 /***************************************************************************************************
  *                      PRIVATE DEFINES
@@ -75,8 +77,22 @@ int main(void) {
  *                      PRIVATE FUNCTIONS DEFINITION
  **************************************************************************************************/
 static void DRV_init(void) {
+    DRV_ERROR_err_E drvErr = ERROR_err_OK;
+
     // Clock
     DRV_RCC_init();
+
+    // Initialize one LED
+    DRV_GPIO_init((uint8_t)GPIO_port_G,
+                  13u,
+                  (uint8_t)GPIO_mode_OUTPUT,
+                  (uint8_t)GPIO_oType_PUSH_PULL,
+                  (uint8_t)GPIO_oSpeed_MEDIUM,
+                  (uint8_t)GPIO_pupd_NONE,
+                  0u,
+                  &drvErr);
+
+    DRV_GPIO_writePin((uint8_t)GPIO_port_G, 13u, 1u, &drvErr);
 }
 
 #endif // MAIN_C_
