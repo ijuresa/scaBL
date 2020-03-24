@@ -32,6 +32,9 @@
 /***************************************************************************************************
  *                      INCLUDE FILES
  **************************************************************************************************/
+#include "stm32f429xx.h"
+#include "typedefs.h"
+
 // DRV
 #include "drv_rcc.h"
 
@@ -46,6 +49,8 @@
 /***************************************************************************************************
  *                      PRIVATE VARIABLES
  **************************************************************************************************/
+//! Flag indicating if DRV_RCC is initialized
+static bool_t isInitialised = FALSE;
 
 /***************************************************************************************************
  *                      GLOBAL VARIABLES DEFINITION
@@ -67,14 +72,14 @@ void DRV_RCC_init(void) {
     RCC->CR &= ~RCC_CR_PLLON;
 
     // Configure PPL
-    RCC->PLLCFGR |= (RCC_PLLCFGR_PLLSRC_HSE |
-                     RCC_PLLCFGR_PLLN_3     |
-                     RCC_PLLCFGR_PLLN_5     |
-                     RCC_PLLCFGR_PLLN_7     |
-                     RCC_PLLCFGR_PLLM_2     |
-                     RCC_PLLCFGR_PLLQ_0     |
-                     RCC_PLLCFGR_PLLQ_1     |
-                     RCC_PLLCFGR_PLLQ_2);
+    RCC->PLLCFGR |= (RCC_PLLCFGR_PLLSRC_HSE
+                      | RCC_PLLCFGR_PLLN_3
+                      | RCC_PLLCFGR_PLLN_5
+                      | RCC_PLLCFGR_PLLN_7
+                      | RCC_PLLCFGR_PLLM_2
+                      | RCC_PLLCFGR_PLLQ_0
+                      | RCC_PLLCFGR_PLLQ_1
+                      | RCC_PLLCFGR_PLLQ_2);
 
     // Enable HSE
     RCC->CR |= RCC_CR_HSEON;
@@ -96,8 +101,133 @@ void DRV_RCC_init(void) {
 
     // Wait for HW to indicate that PPL is used as System Clock
     while((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL);
+
+    isInitialised = TRUE;
 }
 
+void DRV_RCC_ahbEn(uint8_t inPeripheral, DRV_ERROR_err_E *outErr) {
+    if(outErr != NULL_PTR) {
+        if(isInitialised != TRUE) {
+            *outErr = ERROR_err_NOT_INITIALISED;
+        } else {
+            *outErr = ERROR_err_OK;
+
+            switch (inPeripheral) {
+                case (uint8_t)RCC_ahbEn_GPIO_A:
+                    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
+                    break;
+
+                case (uint8_t)RCC_ahbEn_GPIO_B:
+                    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOBEN;
+                    break;
+
+                case (uint8_t)RCC_ahbEn_GPIO_C:
+                    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOCEN;
+                    break;
+
+                case (uint8_t)RCC_ahbEn_GPIO_D:
+                    RCC->AHB1ENR |= RCC_AHB1ENR_GPIODEN;
+                    break;
+
+                case (uint8_t)RCC_ahbEn_GPIO_E:
+                    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOEEN;
+                    break;
+
+                case (uint8_t)RCC_ahbEn_GPIO_F:
+                    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOFEN;
+                    break;
+
+                case (uint8_t)RCC_ahbEn_GPIO_G:
+                    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOGEN;
+                    break;
+
+                case (uint8_t)RCC_ahbEn_GPIO_H:
+                    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOHEN;
+                    break;
+
+                case (uint8_t)RCC_ahbEn_GPIO_I:
+                    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOIEN;
+                    break;
+
+                case (uint8_t)RCC_ahbEn_GPIO_J:
+                    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOJEN;
+                    break;
+
+                case (uint8_t)RCC_ahbEn_GPIO_K:
+                    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOKEN;
+                    break;
+
+                case (uint8_t)RCC_ahbEn_CRC:
+                    RCC->AHB1ENR |= RCC_AHB1ENR_CRCEN;
+                    break;
+
+                case (uint8_t)RCC_ahbEn_BKP_SRAM:
+                    RCC->AHB1ENR |= RCC_AHB1ENR_BKPSRAMEN;
+                    break;
+
+                case (uint8_t)RCC_ahbEn_CCM_RAM:
+                    RCC->AHB1ENR |= RCC_AHB1ENR_CCMDATARAMEN;
+                    break;
+
+                case (uint8_t)RCC_ahbEn_DMA_1:
+                    RCC->AHB1ENR |= RCC_AHB1ENR_DMA1EN;
+                    break;
+
+                case (uint8_t)RCC_ahbEn_DMA_2:
+                    RCC->AHB1ENR |= RCC_AHB1ENR_DMA2EN;
+                    break;
+
+                case (uint8_t)RCC_ahbEn_DMA_2D:
+                    RCC->AHB1ENR |= RCC_AHB1ENR_DMA2DEN;
+                    break;
+
+                case (uint8_t)RCC_ahbEn_ETH_MAC:
+                    RCC->AHB1ENR |= RCC_AHB1ENR_ETHMACEN;
+                    break;
+
+                case (uint8_t)RCC_ahbEn_ETH_TX:
+                    RCC->AHB1ENR |= RCC_AHB1ENR_ETHMACTXEN;
+                    break;
+
+                case (uint8_t)RCC_ahbEn_ETH_RX:
+                    RCC->AHB1ENR |= RCC_AHB1ENR_ETHMACRXEN;
+                    break;
+
+                case (uint8_t)RCC_ahbEn_ETH_PTP:
+                    RCC->AHB1ENR |= RCC_AHB1ENR_ETHMACPTPEN;
+                    break;
+
+                case (uint8_t)RCC_ahbEn_USB_OTG_HS:
+                    RCC->AHB1ENR |= RCC_AHB1ENR_OTGHSEN;
+                    break;
+
+                case (uint8_t)RCC_ahbEn_USB_OTG_HSULPI:
+                    RCC->AHB1ENR |= RCC_AHB1ENR_OTGHSULPIEN;
+                    break;
+
+                case (uint8_t)RCC_ahbEn_DCMI:
+                    RCC->AHB2ENR |= RCC_AHB2ENR_DCMIEN;
+                    break;
+
+                case (uint8_t)RCC_ahbEn_RNG:
+                    RCC->AHB2ENR |= RCC_AHB2ENR_RNGEN;
+                    break;
+
+                case (uint8_t)RCC_ahbEn_USB_OTG_FS:
+                    RCC->AHB2ENR |= RCC_AHB2ENR_OTGFSEN;
+                    break;
+
+                case (uint8_t)RCC_ahbEn_FMC:
+                    RCC->AHB3ENR |= RCC_AHB3ENR_FMCEN;
+                    break;
+
+                default:
+                    *outErr = ERROR_err_ARGS_OUT_OF_RANGE;
+                    break;
+            }
+        }
+    }
+}
 
 /***************************************************************************************************
  *                      PRIVATE FUNCTIONS DEFINITION
